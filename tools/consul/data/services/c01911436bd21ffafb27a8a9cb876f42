@@ -1,0 +1,1 @@
+{"Token":"","Service":{"ID":"pms.kafkawebproducer.api-1","Service":"pms.kafkawebproducer.api","Tags":null,"Address":"localhost","Meta":null,"Port":58225,"Weights":{"Passing":1,"Warning":1},"EnableTagOverride":false,"Proxy":{"MeshGateway":{},"Expose":{}},"Connect":{},"CreateIndex":0,"ModifyIndex":0},"Source":"remote"}

@@ -1,0 +1,70 @@
+version: '3.4'
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - my-network
+
+  kafka:
+    # The config used here exposes port 9092 for _external_ connections to the broker
+    # i.e. those from _outside_ the docker network. This could be from the host machine
+    # running docker. For connections _internal_ to the docker network, such as from 
+    # other services and components, use kafka:29092.
+    # See https://rmoff.net/2018/08/02/kafka-listeners-explained/ for details
+    image: confluentinc/cp-kafka:latest
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - my-network
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+
+  kafka-manager:
+    image: sheepkiller/kafka-manager:latest
+    ports:
+      - "9000:9000"
+    depends_on:
+      - zookeeper
+      - kafka
+    networks:
+      - my-network
+    environment:
+      ZK_HOSTS: zookeeper:2181
+      APPLICATION_SECRET: letmein
+      KM_ARGS: -Djava.net.preferIPv4Stack=true
+  
+  consul:
+    image: consul:latest
+    container_name: consul
+    hostname: consul
+    volumes:
+      - ./tools/consul/config/consul-config.json:/consul/config/config.json
+      - ./tools/consul/data:/consul/data
+    networks:
+      - my-network
+    ports:
+      - "8500:8500"
+      - "8300:8300"
+    command: consul agent -dev -data-dir /consul/data -log-level=warn -ui -client=0.0.0.0
+    
+  mongodb:
+    image: mongo:latest
+    networks:
+      - my-network
+    ports:
+      - 27017:27017
+
+networks:
+  my-network:
+    driver: bridge
