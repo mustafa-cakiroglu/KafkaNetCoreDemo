@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading;
+using Kafka.Domain.Common.Configuration;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 
 namespace KafkaWebConsumer
 {
@@ -14,10 +9,11 @@ namespace KafkaWebConsumer
     {
         public static void Main(string[] args)
         {
-            CreateWebHostBuilder(args).Build().Run();
+            var cancellationTokenSource = new CancellationTokenSource();
+            CreateWebHostBuilder(args, cancellationTokenSource).Build().Run();
         }
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args,CancellationTokenSource cancellationTokenSource) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>();
     }

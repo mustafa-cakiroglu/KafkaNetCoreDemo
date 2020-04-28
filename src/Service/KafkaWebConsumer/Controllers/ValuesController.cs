@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using DotNetCore.CAP;
+using Kafka.Domain.Common.Events;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KafkaWebConsumer.Controllers
@@ -25,21 +24,13 @@ namespace KafkaWebConsumer.Controllers
         }
 
         // POST api/values
-        [HttpPost]
-        public void Post([FromBody] string value)
+        [NonAction]
+        [CapSubscribe(nameof(OrderCreatedEvent))]
+        public void HandleNotificationCreatedAlert(OrderCreatedEvent e)
         {
-        }
 
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
+            var eventId = e.EventId;
 
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
         }
     }
 }
