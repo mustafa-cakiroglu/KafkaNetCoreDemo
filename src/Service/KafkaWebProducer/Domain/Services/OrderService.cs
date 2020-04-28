@@ -14,6 +14,7 @@ namespace KafkaWebProducer.Domain.Services
         {
             _bus = bus ?? throw new ArgumentNullException(nameof(bus));
         }
+
         public async Task CreateOrder(Order order)
         {
             await _bus
